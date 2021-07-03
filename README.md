@@ -16,3 +16,8 @@ The map visualizes how the WCA has expanded into new parts of the world. The cha
 I've used two tables from the WCA database export (https://www.worldcubeassociation.org/results/misc/export.html):
 - Competitions: 1 row for every competition, with information about the competition, such as the date and country
 - Results: Includes every competitor's all competition results. This table was used to gain information about how many people attended each competition.
+
+
+## Project 2: Most common street names in Finland
+
+The source data for this project is the BAF file (data of Finnish street names from (https://www.posti.fi/fi/asiakastuki/postinumerotiedostot). The basis was to convert the .dat file to .csv, ensure the right character set to be compatible with MySQL, import the csv to MySQL and to perform data cleaning in MySQL. The result set is 100 most common street names in Finland and it can be viewed in the sql file directly. I'll later expand this project with other interesting analysis from the Posti data.
