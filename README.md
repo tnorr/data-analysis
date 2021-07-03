@@ -18,6 +18,11 @@ I've used two tables from the WCA database export (https://www.worldcubeassociat
 - Results: Includes every competitor's all competition results. This table was used to gain information about how many people attended each competition.
 
 
-## Project 2: Most common street names in Finland
+## Project 2: Statistics about street names in Finland
 
-The source data for this project is the BAF file (data of Finnish street names from (https://www.posti.fi/fi/asiakastuki/postinumerotiedostot). The basis was to convert the .dat file to .csv, ensure the right character set to be compatible with MySQL, import the csv to MySQL and to perform data cleaning in MySQL. The result set is 100 most common street names in Finland and it can be viewed in the sql file directly. I'll later expand this project with other interesting analysis from the Posti data.
+The source data for this project is the BAF file from (https://www.posti.fi/fi/asiakastuki/postinumerotiedostot). The basis was to convert the .dat file to .csv, ensure the right character set to be compatible with MySQL, import the csv to MySQL and to perform data cleaning in MySQL. Code can be found [here](street-name-statistics/code.sql).
+
+The final statistics:
+- [The most common street names](street-name-statistics/most-common-street-names.csv) (includes those with 10 or more occurences)
+- [Number of postal regions in each city](street-name-statistics/postal-regions-by-city.csv)
+- [Distribution of street names by language in each city](street-name-statistics/street-names-by-language.csv) (this is to show how great percentage of streets have a Swedish name in every city)
