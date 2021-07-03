@@ -81,9 +81,9 @@ WHERE street_fi is not NULL
 	AND street_fi not LIKE 'PL %'
     AND street_fi <> 'Poste restante'
 GROUP BY 1
-	HAVING total > 1
+	HAVING total >= 10
 ORDER BY 2 desc
-LIMIT 100000;
+LIMIT 10000;
 
 # Postal regions in every city / Postinumeroalueiden lukumäärä kunnittain:
 SELECT city_fi, COUNT(distinct zip_code) postal_regions
