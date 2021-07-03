@@ -5,7 +5,7 @@ This is a portfolio repository for compiling my data analysis projects.
 
 #### [Final Tableau dashboard](https://public.tableau.com/views/WCACompetitorGrowth/Dashboard1?:language=en-US&:display_count=n&:origin=viz_share_link)
 
-I created visualizations of how the competitor base of [World Cube Association](wca.link) (WCA) has grown over time. The final dashboard showcases 4 elements:
+I created visualizations of how the competitor base of [World Cube Association](https://www.worldcubeassociation.org/) (WCA) has grown over time. The final dashboard showcases 4 elements:
 - The number of competitions sanctioned by the WCA each year
 - The continuous growth in the number of distinct competitors that attended WCA competitions
 - When was the first WCA competition in each country
