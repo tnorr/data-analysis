@@ -21,6 +21,9 @@ I've used two tables from the WCA database export (https://www.worldcubeassociat
 
 In this project I used MySQL to clean data, as well as Python with pandas and matplotlib to handle dataframes and visualize data.
 
+[MySQL code to initialize the data](population-finland/initialize.sql)
+[Final Jupyter notebook](population-finland/population-by-city.ipynb)
+
 Data source: https://pxnet2.stat.fi/PXWeb/pxweb/fi/StatFin/StatFin__vrm__vaerak/statfin_vaerak_pxt_11rm.px/
 
 
