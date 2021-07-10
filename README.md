@@ -21,7 +21,7 @@ I've used two tables from the WCA database export (https://www.worldcubeassociat
 
 In this project I used MySQL to clean data, as well as Python with pandas and matplotlib to handle dataframes and visualize data.
 
-Data source: (https://pxnet2.stat.fi/PXWeb/pxweb/fi/StatFin/StatFin__vrm__vaerak/statfin_vaerak_pxt_11rm.px/)
+Data source: https://pxnet2.stat.fi/PXWeb/pxweb/fi/StatFin/StatFin__vrm__vaerak/statfin_vaerak_pxt_11rm.px/
 
 
 ## Project 3: Statistics about street names in Finland
