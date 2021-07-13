@@ -29,11 +29,15 @@ UPDATE langdata
 ALTER TABLE langdata MODIFY people MEDIUMINT;
 
 
-# Dataset to export:
+# Datasets to export to csv:
 SELECT city, year, SUM(people) total FROM langdata
 WHERE language IN ('KOTIMAISET KIELET YHTEENSÄ', 'VIERASKIELISET YHTEENSÄ') AND gender = 'Yhteensä'
 GROUP BY 1, 2
 ORDER BY IF(city = 'KOKO MAA', 0, 1), 1, 2
 LIMIT 10000;
+# exported to language_data.csv to import to Jupyter
 
-# I exported the result set to a csv and started working in Python
+SELECT*FROM langdata
+WHERE language IN ('KOTIMAISET KIELET YHTEENSÄ', 'VIERASKIELISET YHTEENSÄ')
+AND city = 'KOKO MAA';
+# exported to language_data2.csv to import to Tableau
