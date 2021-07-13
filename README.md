@@ -13,7 +13,7 @@ I created visualizations of how the competitor base of [World Cube Association](
 
 The map visualizes how the WCA has expanded into new parts of the world. The charts show an exponential growth in the number of competitors and competitions, as well as the huge impact the COVID-19 pandemic had.
 
-I've used two tables from the WCA database export (https://www.worldcubeassociation.org/results/misc/export.html):
+The MySQL code can be seen [here](https://github.com/tnorr/data-analysis-demo/blob/main/wca-competitor-growth.sql). I've used two tables from the WCA database export (https://www.worldcubeassociation.org/results/misc/export.html):
 - Competitions: 1 row for every competition, with information about the competition, such as the date and country
 - Results: Includes every competitor's all competition results. This table was used to gain information about how many people attended each competition.
 
@@ -22,7 +22,8 @@ I've used two tables from the WCA database export (https://www.worldcubeassociat
 In this project I used MySQL to clean data, as well as Python with pandas and matplotlib to handle dataframes and visualize data.
 
 - [MySQL code to initialize the data](population-finland/initialize.sql)
-- [Final Jupyter notebook](population-finland/population-by-city.ipynb)
+- [Jupyter notebook visualizing the population growth in various cities](population-finland/population-by-city.ipynb)
+- [Tableau chart showing the percentage of foreign languages](https://public.tableau.com/views/ForeignlanguagesinFinland/Sheet1?:language=en-US&:display_count=n&:origin=viz_share_link)
 
 Data source: https://pxnet2.stat.fi/PXWeb/pxweb/fi/StatFin/StatFin__vrm__vaerak/statfin_vaerak_pxt_11rm.px/
 
