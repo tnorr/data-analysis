@@ -1,11 +1,11 @@
-//Average of all successful solves ever by event:
+--Average of all successful solves ever by event:
 SELECT eventId, 
 ROUND((SUM(IF(value1>0,value1,0)+IF(value2>0,value2,0)+IF(value3>0,value3,0)+IF(value4>0,value4,0)+IF(value5>0,value5,0))
 /SUM(IF(value1>0,1,0)+IF(value2>0,1,0)+IF(value3>0,1,0)+IF(value4>0,1,0)+IF(value5>0,1,0)))/100,2) AS 'AvgOfSuccesses'
 FROM `Results`
 GROUP BY eventId
 
-//3 or more same solves in average:
+--3 or more same solves in average:
 SELECT * FROM `Results`
 WHERE 
 ((value1=value2 AND (value1=value3 OR value1=value4 OR value1=value5)) OR
@@ -17,14 +17,14 @@ WHERE
 (IF(value1>0,1,0)+IF(value2>0,1,0)+IF(value3>0,1,0)+IF(value4>0,1,0)+IF(value5>0,1,0))>2 AND eventId IN ('333', '222', 'minx', 'pyram')
 ORDER BY best DESC
 
-//MMDD matching a 3x3 single:
+--MMDD matching a 3x3 single:
 SELECT DISTINCT id, name, year, month, day FROM
 (SELECT p.id, p.name, value1, value2, value3, value4, value5, year, month, day, CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) AS 'mmdd' FROM Persons p
 JOIN Results r ON p.id=r.personId
 WHERE eventId='333' AND (value1=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value2=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value3=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value4=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value5=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day)) AND year<>0) T
 ORDER BY month ASC, day ASC
 
-//3x3 single by first name letter:
+--3x3 single by first name letter:
 SELECT firstLetter, personId, name, 
 	CASE 
 	WHEN eventId='333mbf' THEN CONCAT(99-LEFT(best,2)+RIGHT(best,2),'/',99-LEFT(best,2)+2*RIGHT(best,2), ' ', TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM (SUBSTRING(SEC_TO_TIME(SUBSTRING(best,4,4)),2,10))))))))
@@ -43,7 +43,7 @@ WHERE best=letterBest
 ORDER BY best
 LIMIT 40
 
-//3x3 single by last name letter:
+--3x3 single by last name letter:
 SELECT nameLetter, personId, name, 
 	CASE 
 	WHEN eventId='333mbf' THEN CONCAT(99-LEFT(best,2)+RIGHT(best,2),'/',99-LEFT(best,2)+2*RIGHT(best,2), ' ', TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM (SUBSTRING(SEC_TO_TIME(SUBSTRING(best,4,4)),2,10))))))))
@@ -72,7 +72,7 @@ LIMIT 40
 
 
 
-//Competitors in organized competitions:
+--Competitors in organized competitions:
 SELECT u.name, COUNT(*) AS 'competitors', COUNT(DISTINCT personId) AS 'distinct_competitors', COUNT(DISTINCT competition_id) AS 'comps_organized'
 FROM `competition_organizers` c JOIN users u ON c.organizer_id=u.id
 JOIN (SELECT DISTINCT personId, competitionId FROM Results) x
@@ -80,7 +80,7 @@ ON c.competition_id=x.competitionId
 GROUP BY organizer_id
 ORDER BY 2 DESC
 
-//Competitors and organizers in competitions:
+--Competitors and organizers in competitions:
 SELECT competition_id, COUNT(DISTINCT personId) 'competitors', COUNT(DISTINCT organizer_id) 'organizers'
 FROM `competition_organizers` c JOIN users u ON c.organizer_id=u.id
 JOIN (SELECT DISTINCT personId, competitionId FROM Results) x
@@ -89,7 +89,7 @@ GROUP BY competition_id
 ORDER BY 2 DESC
 
 
-//Format results (requires fields 'eventId' and 'best'):
+--Format results (requires fields 'eventId' and 'best'):
 CASE 
 	WHEN eventId='333mbf' THEN CONCAT(99-LEFT(best,2)+RIGHT(best,2),'/',99-LEFT(best,2)+2*RIGHT(best,2), ' ', TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM (SUBSTRING(SEC_TO_TIME(SUBSTRING(best,4,4)),2,10))))))))
 	WHEN eventId='333fm' THEN best
@@ -98,7 +98,7 @@ END
 
 
 
-//Every name has same initial:
+--Every name has same initial:
 SELECT first AS 'letter', COUNT(*) AS 'number' FROM
 	(SELECT *, 
 	IF(names>2, SUBSTRING(REVERSE(SUBSTRING_INDEX(REVERSE(SUBSTRING_INDEX(name,' ',2)),' ',1)),1,1), first) AS 'second',
@@ -114,7 +114,7 @@ SELECT first AS 'letter', COUNT(*) AS 'number' FROM
 GROUP BY 1 ORDER BY 2 DESC
 LIMIT 30
 
-//Worst results ever:
+--Worst results ever:
 SELECT personId, personName, eventId, (CASE 
 	WHEN eventId='333mbf' THEN CONCAT(99-LEFT(best,2)+RIGHT(best,2),'/',99-LEFT(best,2)+2*RIGHT(best,2), ' ', TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM (SUBSTRING(SEC_TO_TIME(SUBSTRING(best,4,4)),2,10))))))))
 	WHEN eventId='333fm' THEN best
@@ -127,7 +127,7 @@ WHEN value4>=value2 AND value4>=value3 AND value4>=value1 AND value4>=value5 THE
 WHEN value5>=value2 AND value5>=value3 AND value5>=value4 AND value5=value1 THEN value5 END) OVER (partition by eventId)) AS best FROM `Results`) A
 WHERE best IN (value1, value2, value3, value4, value5)) B
 
-//Show event and round counts at once:
+--Show event and round counts at once:
 SELECT r1.competitionId, r1.eventId, A.competition_event_id, A.rounds_number_of_rounds, r1.results_number_of_rounds, r2.rounds_number_of_events, r3.results_number_of_events FROM
 (SELECT competition_id, event_id, competition_event_id, COUNT(*) AS rounds_number_of_rounds
 	FROM competition_events ce
@@ -140,7 +140,7 @@ ON r1.competitionId=r2.competition_id
 INNER JOIN (SELECT competitionId, COUNT(*) AS results_number_of_events FROM (SELECT DISTINCT competitionId, eventId FROM Results) results_events GROUP BY competitionId) r3
 ON r1.competitionId=r3.competitionId
 
-//Organizers not registered:
+--Organizers not registered:
 SELECT competition_id, announced_at, organizer_id, wca_id, users.name FROM competition_organizers co
 JOIN Competitions c ON co.competition_id = c.id
 LEFT JOIN users ON co.organizer_id = users.id
@@ -150,7 +150,7 @@ AND CONCAT(competition_id, IFNULL(wca_id, 0)) NOT IN (SELECT DISTINCT CONCAT(com
 ORDER BY 2 desc
 LIMIT 2000
 
-//Percentage of competitors from abroad:
+--Percentage of competitors from abroad:
 SELECT id CompetitionId, 
 	countryId CompetitionCountry, 
 	IFNULL(sameC,0) SameCountryCompetitors, 
