@@ -1,11 +1,8 @@
-# Temporary table is used to compute some useful data about competitions
-
+# Computing some useful data about competitions into a temporary table
 DROP TABLE IF EXISTS competitionStats;
 CREATE TEMPORARY TABLE competitionStats AS (
 
-
 #I'm using CTEs to get a list of every distinct competitor and their first ever WCA competition.
-
 WITH firstCompetition AS (
 	WITH personCompetitions AS (
 		SELECT personId, competitionId, year, endMonth, endDay,
@@ -14,7 +11,6 @@ WITH firstCompetition AS (
 		JOIN Competitions c ON personCompetitions_unordered.competitionId = c.id)
 	SELECT personId, competitionId FROM personCompetitions
 	WHERE comp_index = 1)
-
 
 SELECT 
 	id, countryId, year, 
@@ -37,33 +33,36 @@ LEFT JOIN
 ORDER BY countryId, 4
 );
 
-# Ready to query some statistics:
+# Number of competitions (straight to Power BI):
+SELECT countryId, TRIM(LEADING "_" FROM continentId) continent, year, countryYearlyComps FROM competitionStats
+JOIN countries ON competitionStats.countryId = countries.id
+GROUP BY 1, 3
+ORDER BY 4
+INTO OUTFILE 'D:/yearlyComps.csv'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n';
 
-# 1. Rolling number of new competitors over time
+# 3x3 results (to Python for further manipulation):
+SELECT r.personId, r.countryId, r.competitionId, MIN(r.best) best_single, c.start_date
+FROM results r
+JOIN competitions c ON r.competitionId = c.id 
+WHERE eventId = '333'
+GROUP BY personId, competitionId
+ORDER BY personId, c.start_date
+INTO OUTFILE 'D:/333singles.csv'
+FIELDS TERMINATED BY ','
+ESCAPED BY ""
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+;
+
+# Number of new competitors over time (to Power BI)
 SELECT id, competition_endDate, DATEDIFF(current_date(), competition_endDate) days_since_competition, newcomers,
 SUM(newcomers) OVER (ORDER BY competition_endDate) rolling_global_competitors
-FROM competitionStats;
-
-# 2. Number of competitions every year
-SELECT year, COUNT(*) competitions
 FROM competitionStats
-GROUP BY 1
-ORDER BY 1;
-
-# 3. Days since the first competition in every country to see how the WCA has expanded into new areas
-WITH countryFirstCompetition AS (
-SELECT id, countryId, year, competition_endDate, row_number() OVER (PARTITION BY countryId ORDER BY competition_endDate) rn
-FROM competitionStats
-)
-SELECT countryId, year, competition_endDate, DATEDIFF(current_date(), competition_endDate) days_since_first_competition
-FROM countryFirstCompetition
-WHERE rn = 1 
-AND countryId NOT LIKE 'X_' #These are used for competitions in multiple countries simultaneously
-ORDER BY 4 DESC;
-
-# 4. Number of competitors in each country
-SELECT countryId, COUNT(DISTINCT personId)
-FROM (SELECT DISTINCT personId, competitionId FROM Results) r
-JOIN Competitions c ON r.competitionId = c.id
-GROUP BY countryId
-ORDER BY 2;
+INTO OUTFILE 'D:/newcomers.csv'
+FIELDS TERMINATED BY ','
+ESCAPED BY ""
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n';
