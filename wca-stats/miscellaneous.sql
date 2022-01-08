@@ -1,11 +1,11 @@
---Average of all successful solves ever by event:
+# Average of all successful solves ever by event:
 SELECT eventId, 
 ROUND((SUM(IF(value1>0,value1,0)+IF(value2>0,value2,0)+IF(value3>0,value3,0)+IF(value4>0,value4,0)+IF(value5>0,value5,0))
 /SUM(IF(value1>0,1,0)+IF(value2>0,1,0)+IF(value3>0,1,0)+IF(value4>0,1,0)+IF(value5>0,1,0)))/100,2) AS 'AvgOfSuccesses'
 FROM `Results`
-GROUP BY eventId
+GROUP BY eventId;
 
---3 or more same solves in average:
+# 3 or more same solve results in one average:
 SELECT * FROM `Results`
 WHERE 
 ((value1=value2 AND (value1=value3 OR value1=value4 OR value1=value5)) OR
@@ -15,16 +15,9 @@ WHERE
 (value2=value4 AND value2=value5) OR
 (value3=value4 AND value3=value5)) AND
 (IF(value1>0,1,0)+IF(value2>0,1,0)+IF(value3>0,1,0)+IF(value4>0,1,0)+IF(value5>0,1,0))>2 AND eventId IN ('333', '222', 'minx', 'pyram')
-ORDER BY best DESC
+ORDER BY best DESC;
 
---MMDD matching a 3x3 single:
-SELECT DISTINCT id, name, year, month, day FROM
-(SELECT p.id, p.name, value1, value2, value3, value4, value5, year, month, day, CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) AS 'mmdd' FROM Persons p
-JOIN Results r ON p.id=r.personId
-WHERE eventId='333' AND (value1=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value2=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value3=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value4=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value5=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day)) AND year<>0) T
-ORDER BY month ASC, day ASC
-
---3x3 single by first name letter:
+# Fastest 3x3 singles by first name initial:
 SELECT firstLetter, personId, name, 
 	CASE 
 	WHEN eventId='333mbf' THEN CONCAT(99-LEFT(best,2)+RIGHT(best,2),'/',99-LEFT(best,2)+2*RIGHT(best,2), ' ', TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM (SUBSTRING(SEC_TO_TIME(SUBSTRING(best,4,4)),2,10))))))))
@@ -41,9 +34,9 @@ FROM
 	WHERE eventId='333') X
 WHERE best=letterBest
 ORDER BY best
-LIMIT 40
+LIMIT 40;
 
---3x3 single by last name letter:
+# Fastest 3x3 singles by last name initial:
 SELECT nameLetter, personId, name, 
 	CASE 
 	WHEN eventId='333mbf' THEN CONCAT(99-LEFT(best,2)+RIGHT(best,2),'/',99-LEFT(best,2)+2*RIGHT(best,2), ' ', TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM (SUBSTRING(SEC_TO_TIME(SUBSTRING(best,4,4)),2,10))))))))
@@ -68,37 +61,17 @@ FROM
 	WHERE eventId='333') X
 WHERE best=letterBest
 ORDER BY best
-LIMIT 40
+LIMIT 40;
 
-
-
---Competitors in organized competitions:
+# Competition organizers that have had the most competitors in competitions organized by them:
 SELECT u.name, COUNT(*) AS 'competitors', COUNT(DISTINCT personId) AS 'distinct_competitors', COUNT(DISTINCT competition_id) AS 'comps_organized'
 FROM `competition_organizers` c JOIN users u ON c.organizer_id=u.id
 JOIN (SELECT DISTINCT personId, competitionId FROM Results) x
 ON c.competition_id=x.competitionId
 GROUP BY organizer_id
-ORDER BY 2 DESC
+ORDER BY 2 DESC;
 
---Competitors and organizers in competitions:
-SELECT competition_id, COUNT(DISTINCT personId) 'competitors', COUNT(DISTINCT organizer_id) 'organizers'
-FROM `competition_organizers` c JOIN users u ON c.organizer_id=u.id
-JOIN (SELECT DISTINCT personId, competitionId FROM Results) x
-ON c.competition_id=x.competitionId
-GROUP BY competition_id
-ORDER BY 2 DESC
-
-
---Format results (requires fields 'eventId' and 'best'):
-CASE 
-	WHEN eventId='333mbf' THEN CONCAT(99-LEFT(best,2)+RIGHT(best,2),'/',99-LEFT(best,2)+2*RIGHT(best,2), ' ', TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM (SUBSTRING(SEC_TO_TIME(SUBSTRING(best,4,4)),2,10))))))))
-	WHEN eventId='333fm' THEN best
-	ELSE TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM (SUBSTRING(SEC_TO_TIME(best/100),2,10)))))))
-END
-
-
-
---Every name has same initial:
+# Persons whose every name has the same initial:
 SELECT first AS 'letter', COUNT(*) AS 'number' FROM
 	(SELECT *, 
 	IF(names>2, SUBSTRING(REVERSE(SUBSTRING_INDEX(REVERSE(SUBSTRING_INDEX(name,' ',2)),' ',1)),1,1), first) AS 'second',
@@ -112,9 +85,9 @@ SELECT first AS 'letter', COUNT(*) AS 'number' FROM
 	WHERE names>1 AND names<5 AND first=last
 	HAVING second=third AND first=second) z
 GROUP BY 1 ORDER BY 2 DESC
-LIMIT 30
+LIMIT 30;
 
---Worst results ever:
+# Worst results ever by event:
 SELECT personId, personName, eventId, (CASE 
 	WHEN eventId='333mbf' THEN CONCAT(99-LEFT(best,2)+RIGHT(best,2),'/',99-LEFT(best,2)+2*RIGHT(best,2), ' ', TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM (SUBSTRING(SEC_TO_TIME(SUBSTRING(best,4,4)),2,10))))))))
 	WHEN eventId='333fm' THEN best
@@ -126,21 +99,9 @@ WHEN value3>=value2 AND value3>=value1 AND value3>=value4 AND value3>=value5 THE
 WHEN value4>=value2 AND value4>=value3 AND value4>=value1 AND value4>=value5 THEN value4
 WHEN value5>=value2 AND value5>=value3 AND value5>=value4 AND value5=value1 THEN value5 END) OVER (partition by eventId)) AS best FROM `Results`) A
 WHERE best IN (value1, value2, value3, value4, value5)) B
+;
 
---Show event and round counts at once:
-SELECT r1.competitionId, r1.eventId, A.competition_event_id, A.rounds_number_of_rounds, r1.results_number_of_rounds, r2.rounds_number_of_events, r3.results_number_of_events FROM
-(SELECT competition_id, event_id, competition_event_id, COUNT(*) AS rounds_number_of_rounds
-	FROM competition_events ce
-    INNER JOIN rounds r ON ce.id=r.competition_event_id
-    GROUP BY competition_event_id) A
-RIGHT JOIN (SELECT competitionId, eventId, COUNT(*) AS results_number_of_rounds FROM (SELECT DISTINCT competitionId, eventId, roundTypeId FROM Results) results_rounds GROUP BY competitionId, eventId) r1
-ON A.competition_id=r1.competitionId AND A.event_id=r1.eventId
-LEFT JOIN (SELECT competition_id, COUNT(*) AS rounds_number_of_events FROM competition_events GROUP BY competition_id) r2 
-ON r1.competitionId=r2.competition_id
-INNER JOIN (SELECT competitionId, COUNT(*) AS results_number_of_events FROM (SELECT DISTINCT competitionId, eventId FROM Results) results_events GROUP BY competitionId) r3
-ON r1.competitionId=r3.competitionId
-
---Organizers not registered:
+# Instances where organizers didn't register to compete in a competition they organized:
 SELECT competition_id, announced_at, organizer_id, wca_id, users.name FROM competition_organizers co
 JOIN Competitions c ON co.competition_id = c.id
 LEFT JOIN users ON co.organizer_id = users.id
@@ -148,9 +109,9 @@ LEFT JOIN users ON co.organizer_id = users.id
 AND CONCAT(competition_id, organizer_id) NOT IN (SELECT CONCAT(competition_id, user_id) FROM registrations)
 AND CONCAT(competition_id, IFNULL(wca_id, 0)) NOT IN (SELECT DISTINCT CONCAT(competitionId, personId) FROM Results)
 ORDER BY 2 desc
-LIMIT 2000
+LIMIT 2000;
 
---Percentage of competitors from abroad:
+# Competition with highest percentage of competitors from abroad:
 SELECT id CompetitionId, 
 	countryId CompetitionCountry, 
 	IFNULL(sameC,0) SameCountryCompetitors, 
@@ -173,4 +134,47 @@ LEFT JOIN
 		ON c.id = diff.competitionId
 WHERE results_posted_at IS NOT NULL
 AND countryId NOT LIKE 'X_'
-ORDER BY IFNULL(diffC,0)/(IFNULL(sameC,0)+IFNULL(diffC,0)) DESC, diffC DESC, sameC
+ORDER BY IFNULL(diffC,0)/(IFNULL(sameC,0)+IFNULL(diffC,0)) DESC, diffC DESC, sameC;
+
+# Persons who have at least one 3x3 single that matches their birthdate (mm.dd):
+SELECT DISTINCT id, name, year, month, day FROM
+(SELECT p.id, p.name, value1, value2, value3, value4, value5, year, month, day, CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) AS 'mmdd' FROM Persons p
+JOIN Results r ON p.id=r.personId
+WHERE eventId='333' AND (value1=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value2=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value3=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value4=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value5=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day)) AND year<>0) T
+ORDER BY month ASC, day ASC;
+
+
+
+
+
+
+# Useful statements for computing additional statistics:
+
+# For each competition, show how many competitors and how many organizers they had:
+SELECT competition_id, COUNT(DISTINCT personId) 'competitors', COUNT(DISTINCT organizer_id) 'organizers'
+FROM `competition_organizers` c JOIN users u ON c.organizer_id=u.id
+JOIN (SELECT DISTINCT personId, competitionId FROM Results) x
+ON c.competition_id=x.competitionId
+GROUP BY competition_id
+ORDER BY 2 DESC;
+
+# For each competition, show how many events and rounds they had:
+SELECT r1.competitionId, r1.eventId, A.competition_event_id, A.rounds_number_of_rounds, r1.results_number_of_rounds, r2.rounds_number_of_events, r3.results_number_of_events FROM
+(SELECT competition_id, event_id, competition_event_id, COUNT(*) AS rounds_number_of_rounds
+	FROM competition_events ce
+    INNER JOIN rounds r ON ce.id=r.competition_event_id
+    GROUP BY competition_event_id) A
+RIGHT JOIN (SELECT competitionId, eventId, COUNT(*) AS results_number_of_rounds FROM (SELECT DISTINCT competitionId, eventId, roundTypeId FROM Results) results_rounds GROUP BY competitionId, eventId) r1
+ON A.competition_id=r1.competitionId AND A.event_id=r1.eventId
+LEFT JOIN (SELECT competition_id, COUNT(*) AS rounds_number_of_events FROM competition_events GROUP BY competition_id) r2 
+ON r1.competitionId=r2.competition_id
+INNER JOIN (SELECT competitionId, COUNT(*) AS results_number_of_events FROM (SELECT DISTINCT competitionId, eventId FROM Results) results_events GROUP BY competitionId) r3
+ON r1.competitionId=r3.competitionId;
+
+# Statement to convert results from stored values to display format described on https://www.worldcubeassociation.org/results/misc/export.html ### Results (to be pasted into queries):
+CASE 
+	WHEN eventId='333mbf' THEN CONCAT(99-LEFT(best,2)+RIGHT(best,2),'/',99-LEFT(best,2)+2*RIGHT(best,2), ' ', TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM (SUBSTRING(SEC_TO_TIME(SUBSTRING(best,4,4)),2,10))))))))
+	WHEN eventId='333fm' THEN best
+	ELSE TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM TRIM(LEADING ':' FROM TRIM(LEADING '0' FROM (SUBSTRING(SEC_TO_TIME(best/100),2,10)))))))
+END
+;
