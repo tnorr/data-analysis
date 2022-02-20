@@ -136,12 +136,6 @@ WHERE results_posted_at IS NOT NULL
 AND countryId NOT LIKE 'X_'
 ORDER BY IFNULL(diffC,0)/(IFNULL(sameC,0)+IFNULL(diffC,0)) DESC, diffC DESC, sameC;
 
-# Persons who have at least one 3x3 single that matches their birthdate (mm.dd):
-SELECT DISTINCT id, name, year, month, day FROM
-(SELECT p.id, p.name, value1, value2, value3, value4, value5, year, month, day, CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) AS 'mmdd' FROM Persons p
-JOIN Results r ON p.id=r.personId
-WHERE eventId='333' AND (value1=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value2=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value3=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value4=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day) OR value5=CONCAT(IF(LENGTH(month)=1,0,''),month,IF(LENGTH(day)=1,0,''),day)) AND year<>0) T
-ORDER BY month ASC, day ASC;
 
 
 
