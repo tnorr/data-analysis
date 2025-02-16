@@ -7,12 +7,12 @@ The code is divided in four separate Jupyter notebooks:
 - Reads daily stock market prices from multiple countries from separate files
 - Transforms daily prices to monthly prices
 - Converts all files to the same currency and combines all countries' data into a single dataframe
-##### 2_market_price_analysis
+##### 2_market_price_analysis.ipynb
 - Computes descriptive statistics and fits distributions to the return series of individual companies
 - Compares the performance of the sampled companies to market indexes
-##### 3_scenario_creation
+##### 3_scenario_creation.ipynb
 - Fits a copula to the data and simulates future return scenarios
-##### 4_portfolio_opt
+##### 4_portfolio_opt.ipynb
 - Defines the optimization model
 - Performs out-of-sample testing of the optimal portfolio compositions
 
